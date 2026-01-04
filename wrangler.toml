@@ -1,0 +1,8 @@
+name = "antigravity-claude-proxy"
+main = "worker/src/index.js"
+compatibility_date = "2026-01-04"
+
+# Configure accounts via secrets:
+#   - ACCOUNTS_JSON  (recommended) OR
+#   - ACCOUNT_REFRESH_TOKEN + ACCOUNT_EMAIL (+ optional ACCOUNT_PROJECT_ID)
+

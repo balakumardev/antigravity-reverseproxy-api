@@ -1,0 +1,12 @@
+node_modules
+npm-debug.log
+.git
+.github
+tests
+images
+worker
+*.md
+*.tgz
+.DS_Store
+wrangler.toml
+
