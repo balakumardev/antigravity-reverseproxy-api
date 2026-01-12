@@ -211,6 +211,14 @@ export class WorkerAccountManager {
                 const tokens = await refreshAccessToken(account.refreshToken);
                 token = tokens.accessToken;
 
+                // Handle refresh token rotation (Google may issue new refresh tokens)
+                if (tokens.refreshToken && tokens.refreshToken !== account.refreshToken) {
+                    logger.warn(`[WorkerAccountManager] Refresh token rotated for ${account.email}. ` +
+                        `UPDATE ACCOUNTS_JSON secret with new token to avoid future auth failures.`);
+                    // Update in-memory for this instance's lifetime
+                    account.refreshToken = tokens.refreshToken;
+                }
+
                 if (account.isInvalid) {
                     account.isInvalid = false;
                     account.invalidReason = null;

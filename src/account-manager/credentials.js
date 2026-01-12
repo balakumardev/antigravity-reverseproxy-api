@@ -39,12 +39,27 @@ export async function getTokenForAccount(account, tokenCache, onInvalid, onSave)
         try {
             const tokens = await refreshAccessToken(account.refreshToken);
             token = tokens.accessToken;
+
+            // Handle refresh token rotation (Google may issue new refresh tokens)
+            let needsSave = false;
+            if (tokens.refreshToken && tokens.refreshToken !== account.refreshToken) {
+                logger.info(`[AccountManager] Refresh token rotated for: ${account.email}`);
+                account.refreshToken = tokens.refreshToken;
+                needsSave = true;
+            }
+
             // Clear invalid flag on success
             if (account.isInvalid) {
                 account.isInvalid = false;
                 account.invalidReason = null;
-                if (onSave) await onSave();
+                needsSave = true;
             }
+
+            // Persist changes if needed
+            if (needsSave && onSave) {
+                await onSave();
+            }
+
             logger.success(`[AccountManager] Refreshed OAuth token for: ${account.email}`);
         } catch (error) {
             // Check if it's a transient network error

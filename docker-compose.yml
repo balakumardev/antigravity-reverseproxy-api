@@ -6,14 +6,14 @@ services:
       - "51121:51121"
     environment:
       PORT: "48123"
+      # Use OAuth mode with persistent storage (accounts.json with refresh tokens)
       ACCOUNT_CONFIG_PATH: "/data/accounts.json"
-      # Optional: use Antigravity single-account mode by mounting state.vscdb
-      # ANTIGRAVITY_DB_PATH: "/data/state.vscdb"
-      # Disable SSL verification for corporate proxies/SSL inspection
+      # Disable SSL verification for corporate proxies
       NODE_TLS_REJECT_UNAUTHORIZED: "0"
     volumes:
-      - antigravity_proxy_data:/data
+      # Persistent volume for accounts.json (stores refresh tokens)
+      - antigravity-data:/data
     restart: unless-stopped
 
 volumes:
-  antigravity_proxy_data:
+  antigravity-data:

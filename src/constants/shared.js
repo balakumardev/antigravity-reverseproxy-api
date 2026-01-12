@@ -22,7 +22,7 @@ function getPlatformUserAgent() {
 }
 
 // Cloud Code API endpoints (in fallback order)
-const ANTIGRAVITY_ENDPOINT_DAILY = 'https://daily-cloudcode-pa.sandbox.googleapis.com';
+const ANTIGRAVITY_ENDPOINT_DAILY = 'https://daily-cloudcode-pa.googleapis.com';
 const ANTIGRAVITY_ENDPOINT_PROD = 'https://cloudcode-pa.googleapis.com';
 
 // Endpoint fallback order (daily → prod)
@@ -133,6 +133,11 @@ export const OAUTH_CONFIG = {
 
 export const OAUTH_REDIRECT_URI = `http://localhost:${OAUTH_CONFIG.callbackPort}/oauth-callback`;
 
+// Minimal Antigravity system instruction (from CLIProxyAPI)
+// Only includes the essential identity portion to reduce token usage and improve response quality
+// Reference: GitHub issue #76, CLIProxyAPI, gcli2api
+export const ANTIGRAVITY_SYSTEM_INSTRUCTION = `You are Antigravity, a powerful agentic AI coding assistant designed by the Google Deepmind team working on Advanced Agentic Coding.You are pair programming with a USER to solve their coding task. The task may require creating a new codebase, modifying or debugging an existing codebase, or simply answering a question.**Absolute paths only****Proactiveness**`;
+
 // Model fallback mapping - maps primary model to fallback when quota exhausted
 export const MODEL_FALLBACK_MAP = {
     'gemini-3-pro-high': 'claude-opus-4-5-thinking',
@@ -146,6 +151,7 @@ export const MODEL_FALLBACK_MAP = {
 export default {
     ANTIGRAVITY_ENDPOINT_FALLBACKS,
     ANTIGRAVITY_HEADERS,
+    ANTIGRAVITY_SYSTEM_INSTRUCTION,
     DEFAULT_PROJECT_ID,
     TOKEN_REFRESH_INTERVAL_MS,
     REQUEST_BODY_LIMIT,

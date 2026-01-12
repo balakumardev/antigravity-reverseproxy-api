@@ -82,6 +82,7 @@ export async function refreshAccessToken(refreshToken, config = OAUTH_CONFIG) {
     const tokens = await response.json();
     return {
         accessToken: tokens.access_token,
+        refreshToken: tokens.refresh_token || null, // Google may rotate refresh tokens
         expiresIn: tokens.expires_in
     };
 }

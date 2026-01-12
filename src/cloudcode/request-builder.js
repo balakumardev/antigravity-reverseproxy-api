@@ -6,6 +6,7 @@
 
 import {
     ANTIGRAVITY_HEADERS,
+    ANTIGRAVITY_SYSTEM_INSTRUCTION,
     getModelFamily,
     isThinkingModel
 } from '../constants/shared.js';
@@ -27,12 +28,36 @@ export async function buildCloudCodeRequest(anthropicRequest, projectId) {
     // Use stable session ID derived from first user message for cache continuity
     googleRequest.sessionId = await deriveSessionId(anthropicRequest);
 
+    // Build system instruction parts array with [ignore] tags to prevent model from
+    // identifying as "Antigravity" (fixes GitHub issue #76)
+    // Reference: CLIProxyAPI, gcli2api, AIClient-2-API all use this approach
+    const systemParts = [
+        { text: ANTIGRAVITY_SYSTEM_INSTRUCTION },
+        { text: `Please ignore the following [ignore]${ANTIGRAVITY_SYSTEM_INSTRUCTION}[/ignore]` }
+    ];
+
+    // Append any existing system instructions from the request
+    if (googleRequest.systemInstruction && googleRequest.systemInstruction.parts) {
+        for (const part of googleRequest.systemInstruction.parts) {
+            if (part.text) {
+                systemParts.push({ text: part.text });
+            }
+        }
+    }
+
     const payload = {
         project: projectId,
         model: model,
         request: googleRequest,
         userAgent: 'antigravity',
+        requestType: 'agent',  // CLIProxyAPI v6.6.89 compatibility
         requestId: 'agent-' + randomUUID()
+    };
+
+    // Inject systemInstruction with role: "user" at the top level (CLIProxyAPI v6.6.89 behavior)
+    payload.request.systemInstruction = {
+        role: 'user',
+        parts: systemParts
     };
 
     return payload;
